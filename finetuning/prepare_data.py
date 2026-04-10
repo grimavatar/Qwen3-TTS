@@ -19,14 +19,13 @@ import json
 
 from qwen_tts import Qwen3TTSTokenizer
 
-BATCH_INFER_NUM = 32
-
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--device", type=str, default="cuda:0")
     parser.add_argument("--tokenizer_model_path", type=str, default="Qwen/Qwen3-TTS-Tokenizer-12Hz")
     parser.add_argument("--input_jsonl", type=str, required=True)
     parser.add_argument("--output_jsonl", type=str, required=True)
+    parser.add_argument("--batch_size", type=int, default=2)
     args = parser.parse_args()
 
     tokenizer_12hz = Qwen3TTSTokenizer.from_pretrained(
@@ -45,7 +44,7 @@ def main():
         batch_lines.append(line)
         batch_audios.append(line['audio'])
 
-        if len(batch_lines) >= BATCH_INFER_NUM:
+        if len(batch_lines) >= args.batch_size:
             enc_res = tokenizer_12hz.encode(batch_audios)
             for code, line in zip(enc_res.audio_codes, batch_lines):
                 line['audio_codes'] = code.cpu().tolist()
