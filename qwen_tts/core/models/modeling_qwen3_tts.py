@@ -1625,9 +1625,12 @@ class Qwen3TTSTalkerForConditionalGeneration(Qwen3TTSTalkerTextPreTrainedModel, 
                 sub_talker_inputs_embeds.append(self.code_predictor.get_input_embeddings()[i-1](codec_ids[:, i:i+1]))
         sub_talker_inputs_embeds = torch.cat(sub_talker_inputs_embeds, dim=1)
         
-        sub_talker_outputs = self.code_predictor.forward_finetune(inputs_embeds=sub_talker_inputs_embeds,
-                                                                 labels=codec_ids[:, 1:])
-        
+        sub_talker_outputs = self.code_predictor.forward_finetune(
+            inputs_embeds=sub_talker_inputs_embeds,
+            labels=codec_ids[:, 1:],
+            shift_labels=codec_ids[:, 1:].contiguous(),
+        )
+
         sub_talker_logits = sub_talker_outputs.logits
         sub_talker_loss = sub_talker_outputs.loss
         return sub_talker_logits, sub_talker_loss
