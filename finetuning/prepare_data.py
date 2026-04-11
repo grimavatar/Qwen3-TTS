@@ -16,8 +16,13 @@
 
 import argparse
 import json
+import os
 
 from qwen_tts import Qwen3TTSTokenizer
+
+
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
+
 
 def main():
     parser = argparse.ArgumentParser()
