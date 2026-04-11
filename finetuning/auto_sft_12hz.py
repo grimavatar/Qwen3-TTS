@@ -151,7 +151,8 @@ def train():
                 sub_talker_logits, sub_talker_loss = model.talker.forward_sub_talker_finetune(talker_codec_ids, talker_hidden_states)
 
                 loss = outputs.loss + 0.3 * sub_talker_loss
-                epoch_total_loss += loss.item()
+                loss_value = loss.item()
+                epoch_total_loss += loss_value
 
                 accelerator.backward(loss)
 
@@ -162,7 +163,7 @@ def train():
                 optimizer.zero_grad()
 
             if step % 10 == 0:
-                accelerator.print(f"Epoch {epoch} | Step {step} | Loss: {loss.item():.4f}")
+                accelerator.print(f"Epoch {epoch} | Step {step} | Loss: {loss_value:.4f}")
 
         if accelerator.is_main_process:
             # ---auto---
