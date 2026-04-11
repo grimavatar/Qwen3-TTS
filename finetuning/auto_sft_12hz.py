@@ -163,11 +163,14 @@ def train():
                 optimizer.zero_grad()
 
             if step % 10 == 0:
-                accelerator.print(f"Epoch {epoch} | Step {step} | Loss: {loss_value:.4f}")
+                accelerator.print(f"Epoch {epoch} | Step {step} | Batch Loss: {loss_value:.4f}")
 
         if accelerator.is_main_process:
             # ---auto---
             epoch_avg_loss = epoch_total_loss / len(train_dataloader)
+
+            # temp
+            accelerator.print(f"Epoch {epoch} | Epoch Loss: {loss_value:.4f}")
 
             if epoch > 0 and epoch_avg_loss <= epoch_last_loss and epoch < num_epochs-1:
                 last_output_dir = os.path.join(args.output_model_path, f"checkpoint-epoch-{epoch-1}")
