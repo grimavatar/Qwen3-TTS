@@ -102,6 +102,8 @@ def train():
     model.train()
 
     for epoch in range(num_epochs):
+        total_epoch_loss = 0.0
+
         for step, batch in enumerate(train_dataloader):
             with accelerator.accumulate(model):
 
@@ -146,6 +148,8 @@ def train():
                 sub_talker_logits, sub_talker_loss = model.talker.forward_sub_talker_finetune(talker_codec_ids, talker_hidden_states)
 
                 loss = outputs.loss + 0.3 * sub_talker_loss
+                loss_value = loss.item()
+                total_epoch_loss += loss_value
 
                 accelerator.backward(loss)
 
@@ -155,10 +159,13 @@ def train():
                 optimizer.step()
                 optimizer.zero_grad()
 
-            if step % 10 == 0:
-                accelerator.print(f"Epoch {epoch} | Step {step} | Loss: {loss.item():.4f}")
+            # if step % 10 == 0:
+            #     accelerator.print(f"Epoch {epoch} | Step {step} | Loss: {loss_value:.4f}")
 
         if accelerator.is_main_process:
+            avg_epoch_loss = total_epoch_loss / len(train_dataloader)
+            accelerator.print(f"Epoch {epoch} | Loss: {avg_epoch_loss:.4f}")
+
             output_dir = os.path.join(args.output_model_path, f"checkpoint-epoch-{epoch}")
             shutil.copytree(MODEL_PATH, output_dir, dirs_exist_ok=True)
 
