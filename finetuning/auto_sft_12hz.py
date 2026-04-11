@@ -170,7 +170,7 @@ def train():
             epoch_avg_loss = epoch_total_loss / len(train_dataloader)
 
             # temp
-            accelerator.print(f"Epoch {epoch} | Epoch Loss: {loss_value:.4f}")
+            accelerator.print(f"Epoch {epoch} | Epoch Loss: {epoch_avg_loss:.4f}")
 
             if epoch > 0 and epoch_avg_loss <= epoch_last_loss and epoch < num_epochs-1:
                 last_output_dir = os.path.join(args.output_model_path, f"checkpoint-epoch-{epoch-1}")
